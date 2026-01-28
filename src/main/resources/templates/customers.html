@@ -2,40 +2,44 @@
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
-    <title>AC | Customer Microservice</title>
+    <title>AC | Customer Management</title>
     <style>
         :root { --accent: #8b5cf6; --bg: #0f172a; --card: #1e293b; --text: #f8fafc; }
         body { font-family: 'Inter', sans-serif; background: var(--bg); color: var(--text); padding: 40px; }
-        .container { max-width: 900px; margin: 0 auto; }
+        .container { max-width: 1000px; margin: 0 auto; }
         .header { display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #334155; padding-bottom: 20px; margin-bottom: 30px; }
         .card { background: var(--card); border-radius: 12px; padding: 25px; border: 1px solid #334155; margin-bottom: 20px; }
-        input { background: #0f172a; border: 1px solid #334155; color: white; padding: 12px; border-radius: 8px; margin-right: 10px; width: 200px; }
+        input { background: #0f172a; border: 1px solid #334155; color: white; padding: 12px; border-radius: 8px; margin-right: 10px; }
         button { background: var(--accent); color: white; border: none; padding: 12px 24px; border-radius: 8px; cursor: pointer; font-weight: bold; }
         table { width: 100%; border-collapse: collapse; margin-top: 20px; }
         th { text-align: left; color: #94a3b8; font-size: 13px; padding: 12px; border-bottom: 2px solid #334155; }
         td { padding: 15px; border-bottom: 1px solid #334155; }
-        .btn-del { color: #ef4444; text-decoration: none; font-size: 13px; }
+        .search-box { margin-bottom: 20px; display: flex; gap: 10px; }
     </style>
 </head>
 <body>
     <div class="container">
         <div class="header">
-            <div>
-                <h1 style="margin:0">Customer Service</h1>
-                <span style="color:var(--accent)">br.com.alexandrecamposcastro.customer</span>
-            </div>
-            <div style="text-align:right">
-                <span style="background:#1e293b; padding:5px 10px; border-radius:5px; font-size:12px">PORT: 8081</span>
-            </div>
+            <h1>Customer Service <span style="font-size: 14px; color: var(--accent);"></span></h1>
+            <span>Port: 8081</span>
         </div>
 
         <div class="card">
-            <h3>Novo Cadastro de Cliente</h3>
+            <form th:action="@{/}" method="get" class="search-box">
+                <input type="text" name="search" placeholder="Pesquisar por nome..." style="flex-grow: 1;">
+                <button type="submit" style="background: #334155;">Pesquisar</button>
+                <a th:href="@{/}" style="color: white; padding-top: 10px;">Limpar</a>
+            </form>
+        </div>
+
+        <div class="card">
+            <h3 th:text="${newCustomer.id != null ? 'Editar Cliente' : 'Novo Cliente'}"></h3>
             <form th:action="@{/save}" th:object="${newCustomer}" method="post">
-                <input type="text" th:field="*{name}" placeholder="Nome Completo" required>
-                <input type="email" th:field="*{email}" placeholder="E-mail Corporativo">
+                <input type="hidden" th:field="*{id}">
+                <input type="text" th:field="*{name}" placeholder="Nome" required>
+                <input type="email" th:field="*{email}" placeholder="Email">
                 <input type="text" th:field="*{cpf}" placeholder="CPF">
-                <button type="submit">Cadastrar</button>
+                <button type="submit">Salvar</button>
             </form>
         </div>
 
@@ -43,20 +47,19 @@
             <table>
                 <thead>
                     <tr>
-                        <th>ID</th>
-                        <th>NOME</th>
-                        <th>EMAIL</th>
-                        <th>CPF</th>
-                        <th>AÇÕES</th>
+                        <th>ID</th><th>NOME</th><th>EMAIL</th><th>CPF</th><th>AÇÕES</th>
                     </tr>
                 </thead>
                 <tbody>
                     <tr th:each="c : ${customers}">
                         <td th:text="${c.id}"></td>
-                        <td th:text="${c.name}" style="font-weight:bold"></td>
+                        <td th:text="${c.name}" style="font-weight: bold;"></td>
                         <td th:text="${c.email}"></td>
                         <td th:text="${c.cpf}"></td>
-                        <td><a th:href="@{'/delete/' + ${c.id}}" class="btn-del">Excluir</a></td>
+                        <td>
+                            <a th:href="@{'/edit/' + ${c.id}}" style="color: var(--accent); text-decoration: none; margin-right: 15px;">Editar</a>
+                            <a th:href="@{'/delete/' + ${c.id}}" style="color: #ef4444; text-decoration: none;">Excluir</a>
+                        </td>
                     </tr>
                 </tbody>
             </table>
@@ -64,3 +67,4 @@
     </div>
 </body>
 </html>
+
